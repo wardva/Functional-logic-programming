@@ -1,2 +1,2 @@
 # Functional-logic-programming
-My solutions for the exercises of the course "Functional and Logic Programming Languages" of the study "Master of Science in Mathematical Informatics" at Ghent University. Bugs and errors are possible.
+My solutions for the exercises of the course "Functional and Logic Programming Languages" of the study "Master of Science in Mathematical Informatics" at Ghent University. Bugs and errors are possible. Feel free to fork and make improvements.
