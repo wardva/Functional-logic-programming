@@ -9,12 +9,13 @@ boolToChurch = \b -> if b
   else cFalse
 
 --Operaties
-cAnd = \b1 -> \b2 ->
-cOr = \b1 -> \b2 ->
-cNot = \b1 -> \b2 ->
+cAnd = \b1 -> \b2 -> b1 (b2 b1)
+cOr = \b1 -> \b2 -> b1 (b1 b2)
+cNot = \b -> b cFalse cTrue
 
 main = do
-  let cBool = boolToChurch True
-  let bool = churchToBool cBool
+  let cBoolA = cAnd cFalse cFalse
+  let cBoolB = cOr cTrue cTrue
+  let bool = churchToBool cBoolB   --Fout vanaf hier bij elk resultaat van cAnd of cOr, geen problemen bij cNot
+  --let bool = churchToBool cTrue --Werkt wel
   print bool
-  --print num
