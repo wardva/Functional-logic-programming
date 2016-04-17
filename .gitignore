@@ -12,5 +12,8 @@ cabal-dev
 cabal.sandbox.config
 *.prof
 *.aux
+*.exe
 *.hp
 .stack-work/
+__MACOSX/
+.DS_Store
