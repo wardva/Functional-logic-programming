@@ -1,5 +1,6 @@
 import Text.ParserCombinators.Parsec
 import System.Random
+import Control.Monad.Trans
 import Data.CSV
 import Control.Monad
 import Control.Monad.State
@@ -24,10 +25,10 @@ data Card = Card { question :: String,
 --de state aan.
 nextQuestion :: Questions -> Stats -> StateT Stats IO ()
 nextQuestion qs s = do
-  card <- io $ randomCard qs
-  io $ putStrLn (question card) >> putStrLn ""
-  io $ mapM_ (\i -> putStrLn (show (i+1) ++ ") " ++ answers card !! i)) [0..4]
-  answer <- io readInt
+  card <- lift $ randomCard qs
+  lift $ putStrLn (question card) >> putStrLn ""
+  lift $ mapM_ (\i -> putStrLn (show (i+1) ++ ") " ++ answers card !! i)) [0..4]
+  answer <- lift readInt
   put $ answered (answer - 1 == correctAnswer card) s
 
 --Deze functie zorgt ervoor dat het programma blijft draaien: de state
@@ -44,21 +45,16 @@ start qs = do
 printStats :: StateT Stats IO ()
 printStats = do
   s <- get
-  io . putStrLn $ "Total: " ++ show (total s)
-  io . putStrLn $ "Correct: " ++ show (correct s)
-  io . putStrLn $ "Incorrect: " ++ show (incorrect s)
+  lift $ putStrLn $ "Total: " ++ show (total s)
+  lift $ putStrLn $ "Correct: " ++ show (correct s)
+  lift $ putStrLn $ "Incorrect: " ++ show (incorrect s)
 
 --Wijzig de statistieken afhanelijk van een bool die aanduidt of een vraag
 --juist of correct is beantwoord.
 answered :: Bool -> Stats -> Stats
-answered b s = if b
-  then Stats { correct = correct s + 1,
-               incorrect = incorrect s,
-               total = total s + 1 }
-  else Stats { correct = correct s,
-               incorrect = incorrect s + 1,
-               total = total s + 1 }
-
+answered b s = Stats { correct = if b then 1 + correct s else correct s,
+                       incorrect = if b then correct s else 1 + correct s,
+                       total = total s + 1 }
 --Lees een Int van stdin.
 readInt :: IO Int
 readInt = do
@@ -69,10 +65,6 @@ readInt = do
 --Return een lijst van n random waarden in een IO monad.
 getNRandom :: (Int,Int) -> Int -> IO [Int]
 getNRandom r n = mapM (const (randomRIO r)) [0..(n-1)]
-
---Converteer een IO operatie naar een StateT IO
-io :: IO a -> StateT Stats IO a
-io = liftIO
 
 --Returnt de vraagstring van een Question
 getQuestion :: Question -> String
