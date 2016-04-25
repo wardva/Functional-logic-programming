@@ -96,4 +96,5 @@ main = do
   let stats = Stats { correct = 0,
                       incorrect = 0,
                       total = 0 }
-  void $ runStateT (start qs) stats
+  runStateT (start qs) stats
+  return ()
